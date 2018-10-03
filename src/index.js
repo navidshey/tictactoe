@@ -10,6 +10,18 @@ function Square(props) {
   );
 }
 
+function CalculateRowCol(props){
+  if(isNaN(props.index))
+     return (<div></div>);
+
+     props.index +=1;
+  const row = Math.ceil(props.index/3);
+  const column = props.index - (row-1)*3;
+  return (
+    <div>row: {row}, columns: {column}</div>
+  );
+}
+
 class Board extends React.Component {
   renderSquare(i) {
     return (
@@ -53,12 +65,14 @@ class Game extends React.Component {
         }
       ],
       stepNumber: 0,
-      xIsNext: true
+      xIsNext: true,
+      clickedIndex: []
     };
   }
 
   handleClick(i) {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
+    const clickedIndex = this.state.clickedIndex.slice(0, this.state.stepNumber);
     const current = history[history.length - 1];
     const squares = current.squares.slice();
     if (calculateWinner(squares) || squares[i]) {
@@ -72,7 +86,8 @@ class Game extends React.Component {
         }
       ]),
       stepNumber: history.length,
-      xIsNext: !this.state.xIsNext
+      xIsNext: !this.state.xIsNext,
+      clickedIndex: clickedIndex.concat(i)
     });
   }
 
@@ -93,9 +108,12 @@ class Game extends React.Component {
         'Go to move #' + move :
         'Go to game start';
       return (
-        <li key={move}>
+        <div key={move}>
+        <li>
           <button onClick={() => this.jumpTo(move)}>{desc}</button>
         </li>
+        <CalculateRowCol index={this.state.clickedIndex[move]}/>
+        </div>
       );
     });
 
