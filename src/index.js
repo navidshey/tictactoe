@@ -23,11 +23,17 @@ function CalculateRowCol(props){
 }
 
 class Board extends React.Component {
+  setHighLight(i){
+    if(this.props.winsquares)
+     return( this.props.lastIndex === i || (this.props.winsquares && this.props.winsquares.includes(i)))
+  };
+
   renderSquare(i) {
     return (
       <Square
+        winsquares = {this.props.winsquares}
         value={this.props.squares[i]}
-        isClicked={this.props.lastIndex === i}
+        isClicked={this.setHighLight(i)}
         onClick={() => this.props.onClick(i)}
       />
     );
@@ -77,6 +83,8 @@ class Game extends React.Component {
     const clickedIndex = this.state.clickedIndex.slice(0, this.state.stepNumber);
     const current = history[history.length - 1];
     const squares = current.squares.slice();
+    
+
     if (calculateWinner(squares) || squares[i]) {
       return;
     }
@@ -100,6 +108,7 @@ class Game extends React.Component {
     });
   }
 
+
   render() {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
@@ -122,7 +131,7 @@ class Game extends React.Component {
 
     let status;
     if (winner) {
-      status = "Winner: " + winner;
+      status = "Winner: " + winner.winner;
     }else if(this.state.stepNumber === 9){
       status = "No one win."
     }
@@ -134,6 +143,7 @@ class Game extends React.Component {
       <div className="game">
         <div className="game-board">
           <Board
+            winsquares = {winner ? winner.squares : []}
             squares={current.squares}
             lastIndex={this.state.clickedIndex[this.state.stepNumber-1]}
             onClick={i => this.handleClick(i)}
@@ -166,7 +176,10 @@ function calculateWinner(squares) {
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      return {
+        winner: squares[a],
+        squares:lines[i]
+      }
     }
   }
   return null;
