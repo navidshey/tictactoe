@@ -4,7 +4,7 @@ import './index.css';
 
 function Square(props) {
   return (
-    <button className="square" onClick={props.onClick}>
+    <button className={props.isClicked ? 'current square' : 'square'} onClick={props.onClick}>
       {props.value}
     </button>
   );
@@ -14,7 +14,7 @@ function CalculateRowCol(props){
   if(isNaN(props.index))
      return (<div></div>);
 
-     props.index +=1;
+    //  props.index = props.index ? props.index+1 : props.index;
   const row = Math.ceil(props.index/3);
   const column = props.index - (row-1)*3;
   return (
@@ -27,6 +27,7 @@ class Board extends React.Component {
     return (
       <Square
         value={this.props.squares[i]}
+        isClicked={this.props.lastIndex === i}
         onClick={() => this.props.onClick(i)}
       />
     );
@@ -107,12 +108,13 @@ class Game extends React.Component {
       const desc = move ?
         'Go to move #' + move :
         'Go to game start';
+
       return (
         <div key={move}>
         <li>
           <button onClick={() => this.jumpTo(move)}>{desc}</button>
         </li>
-        <CalculateRowCol index={this.state.clickedIndex[move]}/>
+        <CalculateRowCol index={this.state.clickedIndex[move]+1}/>
         </div>
       );
     });
@@ -129,6 +131,7 @@ class Game extends React.Component {
         <div className="game-board">
           <Board
             squares={current.squares}
+            lastIndex={this.state.clickedIndex[this.state.stepNumber-1]}
             onClick={i => this.handleClick(i)}
           />
         </div>
