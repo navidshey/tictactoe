@@ -33,24 +33,25 @@ class Board extends React.Component {
     );
   }
 
+  //based on this article: https://blog.cloudboost.io/for-loops-in-react-render-no-you-didnt-6c9f4aa73778
+  createBoard(){
+    let board=[];
+
+    for(let i=0; i<3; i++){
+      let children=[];
+      for(let j=0; j<3; j++){
+        children.push(this.renderSquare(3*i + j))
+      }
+      board.push(<div className="board-row">{children}</div>)
+    }
+
+    return board;
+  }
+
   render() {
     return (
       <div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
+        {this.createBoard()}
       </div>
     );
   }
@@ -122,7 +123,10 @@ class Game extends React.Component {
     let status;
     if (winner) {
       status = "Winner: " + winner;
-    } else {
+    }else if(this.state.stepNumber === 9){
+      status = "No one win."
+    }
+     else {
       status = "Next player: " + (this.state.xIsNext ? "X" : "O");
     }
 
